@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santiago Ride Comparer | Uber vs DiDi</title>
+    <meta name="description" content="Compara tarifas de Uber y DiDi en tiempo real para Santiago de Chile.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa-solid fa-calculator-combined"></i>
+                <span>Santiago Ride Comparer</span>
+            </div>
+            <div class="subtitle">
+                <i class="fa-solid fa-location-dot"></i> Santiago de Chile
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sidebar Controls -->
+        <section class="sidebar">
+            <div class="card">
+                <h2><i class="fa-solid fa-route"></i> Plan Your Route</h2>
+                
+                <div id="errorBanner" class="error-banner">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="errorMessage"></span>
+                </div>
+
+                <form id="compareForm">
+                    <div class="form-group">
+                        <label for="start">Starting Point</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                            <input type="text" id="start" placeholder="e.g., Costanera Center o Providencia 1234" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end">Destination Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" id="end" placeholder="e.g., Aeropuerto de Santiago o Las Condes" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-compare" id="btnCompare">
+                        <span id="btnText"><i class="fa-solid fa-magnifying-glass-dollar"></i> Compare Now</span>
+                        <div id="loader" class="loader"></div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Route Details & Prices -->
+            <div id="resultsContainer" class="results-container">
+                <div class="route-summary">
+                    <div class="summary-item">
+                        <div class="label">Distance</div>
+                        <div class="value" id="distanceVal">-</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">Est. Time</div>
+                        <div class="value" id="durationVal">-</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">Surge</div>
+                        <div class="value" id="surgeVal">-</div>
+                    </div>
+                </div>
+
+                <div class="comparison-grid">
+                    <!-- Uber Card -->
+                    <div class="brand-card uber" id="uberCard">
+                        <div class="cheaper-badge" id="uberBadge" style="display:none;">Cheapest</div>
+                        <div class="brand-header">
+                            <div class="brand-logo">
+                                <i class="fa-brands fa-uber"></i>
+                                <span>Uber</span>
+                            </div>
+                        </div>
+                        <div class="tariff-list">
+                            <div class="tariff-item">
+                                <div class="tariff-info">
+                                    <div class="type">UberX</div>
+                                    <div class="desc">Everyday rides</div>
+                                </div>
+                                <div class="tariff-price" id="uberXPrice">-</div>
+                            </div>
+                            <div class="tariff-item">
+                                <div class="tariff-info">
+                                    <div class="type">Comfort</div>
+                                    <div class="desc">Newer cars, top drivers</div>
+                                </div>
+                                <div class="tariff-price" id="uberComfortPrice">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DiDi Card -->
+                    <div class="brand-card didi" id="didiCard">
+                        <div class="cheaper-badge" id="didiBadge" style="display:none;">Cheapest</div>
+                        <div class="brand-header">
+                            <div class="brand-logo">
+                                <i class="fa-solid fa-car"></i>
+                                <span>DiDi</span>
+                            </div>
+                        </div>
+                        <div class="tariff-list">
+                            <div class="tariff-item">
+                                <div class="tariff-info">
+                                    <div class="type">Express</div>
+                                    <div class="desc">Standard economic ride</div>
+                                </div>
+                                <div class="tariff-price" id="didiExpressPrice">-</div>
+                            </div>
+                            <div class="tariff-item">
+                                <div class="tariff-info">
+                                    <div class="type">Taxi</div>
+                                    <div class="desc">Local city taxi</div>
+                                </div>
+                                <div class="tariff-price" id="didiTaxiPrice">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-container">
+            <div id="map"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Santiago Ride Comparer &copy; 2026. Powered by OpenStreetMap & OSRM.</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

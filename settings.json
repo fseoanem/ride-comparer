@@ -1,0 +1,7 @@
+{
+  "model": "Gemini 3.5 Flash (Low)",
+  "trustedWorkspaces": [
+    "C:\\Users\\User\\agy2-projects\\agy-cli-projects",
+    "C:\\Users\\User\\agy2-projects\\agy-cli-projects\\agy-cli-projects"
+  ]
+}
