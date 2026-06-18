@@ -3,11 +3,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const defaultCenter = [-33.4489, -70.6693]; // Santiago Centro
     const map = L.map("map").setView(defaultCenter, 12);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    const darkTilesUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    const lightTilesUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+
+    const tileLayer = L.tileLayer(darkTilesUrl, {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
     }).addTo(map);
+
+    // Theme Toggle Elements & Logic
+    const themeToggleBtn = document.getElementById("themeToggle");
+    const themeToggleIcon = themeToggleBtn.querySelector("i");
+    
+    // Check saved theme or default to dark
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        themeToggleIcon.className = "fa-solid fa-moon";
+        tileLayer.setUrl(lightTilesUrl);
+    } else {
+        themeToggleIcon.className = "fa-solid fa-sun";
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+        const isLight = document.body.classList.toggle("light-theme");
+        localStorage.setItem("theme", isLight ? "light" : "dark");
+        themeToggleIcon.className = isLight ? "fa-solid fa-moon" : "fa-solid fa-sun";
+        tileLayer.setUrl(isLight ? lightTilesUrl : darkTilesUrl);
+    });
 
     let routeLayer = null;
     let startMarker = null;

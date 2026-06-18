@@ -15,6 +15,16 @@
     --transition-speed: 0.3s;
 }
 
+body.light-theme {
+    --bg-color: #f1f5f9;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-uber-light: #e2e8f0;
+    --accent-didi-light: #fed7aa;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -25,12 +35,13 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-color);
     background-image: 
-        radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
-        radial-gradient(at 90% 80%, rgba(255, 127, 0, 0.1) 0px, transparent 50%);
+        radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(255, 127, 0, 0.08) 0px, transparent 50%);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 header {
@@ -402,4 +413,46 @@ footer {
     font-size: 0.8rem;
     border-top: 1px solid var(--card-border);
     margin-top: auto;
+    transition: border-color var(--transition-speed);
 }
+
+/* Header Controls & Toggle Switch */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
+body.light-theme .theme-toggle-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-primary);
+}
+
+body.light-theme .theme-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Transition improvements */
+.card, header, .brand-card, .tariff-item, input, select, button {
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
